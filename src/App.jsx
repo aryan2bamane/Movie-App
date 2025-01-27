@@ -109,10 +109,11 @@ const App = () => {
             </h1>
             <Search searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
           </header>
+
           {trendingMovies.length > 0 && (
             <section className="trending">
               <h2>Trending Movies</h2>
-              <ul className="mt-2 lg:justify-center">
+              <ul>
                 {trendingIsLoading ? (
                   <Spinner />
                 ) : trendingErrorMessage ? (
@@ -131,6 +132,7 @@ const App = () => {
               </ul>
             </section>
           )}
+
           <section className="all-movies mt-2">
             <h2>All Movies</h2>
             {isLoading ? (
