@@ -124,6 +124,7 @@ const App = () => {
           </section>
         </div>
       </div>
+      <SpeedInsights />
     </main>
   );
 };
