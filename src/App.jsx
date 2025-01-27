@@ -4,6 +4,7 @@ import Search from "./components/Search";
 import Spinner from "./components/Spinner";
 import MovieCard from "./components/MovieCard";
 import { getTrendingMovie, updateSearchCount } from "./appwrite";
+import { SpeedInsights } from "@vercel/speed-insights/react";
 
 const API_BASE_URL = "https://api.themoviedb.org/3";
 
@@ -17,17 +18,17 @@ const API_OPTIONS = {
   },
 };
 
-const Loading = () => {
-  return <p className="text-white">Loading...</p>;
-};
-
 const App = () => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
-  const [movieList, setMovieList] = useState([]);
-  const [trendingMovies, setTrendingMovies] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
+
+  const [movieList, setMovieList] = useState([]);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
+
+  const [trendingMovies, setTrendingMovies] = useState([]);
+  const [trendingErrorMessage, settrendingErrorMessage] = useState("");
+  const [trendingIsLoading, settrendingIsLoading] = useState(true);
 
   useDebounce(() => setDebouncedSearchTerm(searchTerm), 500, [searchTerm]);
 
@@ -48,30 +49,43 @@ const App = () => {
       console.log(data);
 
       if (data.Response === "False") {
-        setErrorMessage("Error fetching movies. Please try again later.");
+        setErrorMessage(
+          "Wait bro... it's loading or may have lost the way while fetching! 😅"
+        );
         setMovieList([]);
         return;
       }
 
       setMovieList(data.results || []);
+      // throw new Error("HAHA!");
       if (query && data.results.length > 0) {
         await updateSearchCount(query, data.results[0]);
       }
     } catch (error) {
       console.error(`Error fetching movies: ${error}`);
-      setErrorMessage("Error fetching movies. Please try again later.");
+      setErrorMessage(
+        "Wait bro... it's loading or may have lost the way while getting Movies! 😅"
+      );
     } finally {
       setIsLoading(false);
     }
   };
 
   const loadTrendingMovies = async () => {
+    settrendingIsLoading(true);
+    settrendingErrorMessage("");
     try {
       const movies = await getTrendingMovie();
+      // throw new Error("JUST KIDDING!");
 
       setTrendingMovies(movies);
     } catch (error) {
       console.log("Error loadTrendingMovies!!", error);
+      settrendingErrorMessage(
+        "Wait bro... it's loading or may have lost the way! 😅"
+      );
+    } finally {
+      settrendingIsLoading(false);
     }
   };
 
@@ -98,22 +112,33 @@ const App = () => {
           {trendingMovies.length > 0 && (
             <section className="trending">
               <h2>Trending Movies</h2>
-              <ul>
-                {trendingMovies.map((movie, index) => (
-                  <li key={movie.$id}>
-                    <p>{index + 1}</p>
-                    <img src={movie.poster_url} alt={movie.title} />
-                  </li>
-                ))}
+              <ul className="mt-2 lg:justify-center">
+                {trendingIsLoading ? (
+                  <Spinner />
+                ) : trendingErrorMessage ? (
+                  <p className="text-yellow-500 mt-2">
+                    {" "}
+                    {trendingErrorMessage}
+                  </p>
+                ) : (
+                  trendingMovies.map((movie, index) => (
+                    <li key={movie.$id}>
+                      <p>{index + 1}</p>
+                      <img src={movie.poster_url} alt={movie.title} />
+                    </li>
+                  ))
+                )}
               </ul>
             </section>
           )}
-          <section className="all-movies">
+          <section className="all-movies mt-2">
             <h2>All Movies</h2>
             {isLoading ? (
               <Spinner />
             ) : errorMessage ? (
-              <p className="text-red-500"> {errorMessage}</p>
+              <div className="flex justify-center">
+                <p className="text-yellow-500"> {errorMessage}</p>
+              </div>
             ) : (
               <ul>
                 {movieList.map((movie) => (
