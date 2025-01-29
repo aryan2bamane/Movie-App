@@ -100,55 +100,70 @@ const App = () => {
   return (
     <main>
       <div className="pattern">
-        <div className="wrapper">
-          <header>
-            <img src="/hero-img.png" alt="hero img" />
-            <h1>
-              Find <span className="text-gradient">Movies</span>You'll Enjoy
-              Without The Hassle
-            </h1>
+        <div className=" lg:flex justify-around items-start">
+          {/*  */}
+          <div className="hero lg:w-[45vw] lg:h-[100vh] lg:overflow-hidden">
+            <header>
+              <img src="/hero-img.png" alt="hero img" />
+              <h1>
+                Find <span className="text-gradient">Movies</span>You'll Enjoy
+                Without The Hassle
+              </h1>
+            </header>
+          </div>
+
+          <div className="content lg:w-[55vw] lg:h-[100vh] lg:overflow-y-scroll flex-col justify-between items-start">
+            {/* Search Field */}
             <Search searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
-          </header>
 
-          {trendingMovies.length > 0 && (
-            <section className="trending">
-              <h2>Trending Movies</h2>
-              <ul>
-                {trendingIsLoading ? (
-                  <Spinner />
-                ) : trendingErrorMessage ? (
-                  <p className="text-yellow-500 mt-2">
-                    {" "}
-                    {trendingErrorMessage}
-                  </p>
-                ) : (
-                  trendingMovies.map((movie, index) => (
-                    <li key={movie.$id}>
-                      <p>{index + 1}</p>
-                      <img src={movie.poster_url} alt={movie.title} />
-                    </li>
-                  ))
-                )}
-              </ul>
-            </section>
-          )}
-
-          <section className="all-movies mt-2">
-            <h2>All Movies</h2>
-            {isLoading ? (
-              <Spinner />
-            ) : errorMessage ? (
-              <div className="flex justify-center">
-                <p className="text-yellow-500"> {errorMessage}</p>
-              </div>
-            ) : (
-              <ul>
-                {movieList.map((movie) => (
-                  <MovieCard key={movie.id} movie={movie} />
-                ))}
-              </ul>
+            {trendingMovies.length > 0 && (
+              <section className="mt-5 trending lg:w-[50vw] mx-5">
+                <h2>Most Searched Movies</h2>
+                <ul className="flex flex-row overflow-y-auto gap-5  w-full hide-scrollbar">
+                  {trendingIsLoading ? (
+                    <Spinner />
+                  ) : trendingErrorMessage ? (
+                    <p className="text-yellow-500 mt-2">
+                      {" "}
+                      {trendingErrorMessage}
+                    </p>
+                  ) : (
+                    trendingMovies.map((movie, index) => (
+                      <li
+                        key={movie.$id}
+                        className="min-w-[230px] flex flex-row items-center "
+                      >
+                        <p>{index + 1}</p>
+                        <img
+                          className="w-[127px] h-[163px] rounded-lg object-cover -ml-3.5"
+                          src={movie.poster_url}
+                          alt={movie.title}
+                        />
+                      </li>
+                    ))
+                  )}
+                </ul>
+              </section>
             )}
-          </section>
+
+            <section className="my-2 flex-col items-start mx-5 h-full gap-5">
+              <h2>All Movies</h2>
+              {isLoading ? (
+                <Spinner />
+              ) : errorMessage ? (
+                <div className="flex justify-center">
+                  <p className="text-yellow-500"> {errorMessage}</p>
+                </div>
+              ) : (
+                <ul className="md:flex justify-start items-center flex-wrap gap-5 my-5 ">
+                  {movieList.map((movie) => (
+                    <MovieCard key={movie.id} movie={movie} />
+                  ))}
+                </ul>
+              )}
+            </section>
+          </div>
+          {/*  */}
         </div>
       </div>
       <SpeedInsights />
